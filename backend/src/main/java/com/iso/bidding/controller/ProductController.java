@@ -32,7 +32,7 @@ public class ProductController {
 
     @PostMapping("/Products")
     public ResponseEntity<Product> createProduct(@RequestBody Product Product) {
-
+    
     }
 
     @PutMapping("/Products/{id}")
