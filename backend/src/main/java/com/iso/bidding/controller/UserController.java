@@ -2,6 +2,8 @@ package com.iso.bidding.controller;
 
 import com.iso.bidding.model.User;
 import com.iso.bidding.repository.UserRepository;
+import com.iso.bidding.utils.Encrypter;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin(origins = "http://localhost:8080")
+@CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -18,12 +20,12 @@ public class UserController {
     @Autowired
     UserRepository userRepository;
 
-    @GetMapping("/Users")
-    public ResponseEntity<List<User>> getAllUsers(@RequestParam(required = false) String title) {
+    @GetMapping("/getAll")
+    public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok().body(userRepository.findAll());
     }
 
-    @GetMapping("/Users/{id}")
+    @GetMapping("/get/{id}")
     public ResponseEntity<User> getUserById(@PathVariable("id") String id) {
         Optional<User> userOptional = userRepository.findById(id);
 
@@ -32,15 +34,38 @@ public class UserController {
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @PostMapping("/Users")
+    @PostMapping("/create")
     public ResponseEntity<User> createUser(@RequestBody User user) {
+
+        // Username and surname is not sent correctly.
+        if ((user.getName() + user.getSurname()).equals("")) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        // User mail is not sent correctly.
+        if (user.getMail() == null || user.getMail().equals("")) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        // There already is a user registered by this mail
+        if (userRepository.findByMail(user.getMail()) != null) {
+            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+        }
+
+        // User password is not sent correctly.
+        if (user.getPassword() == null || user.getPassword().equals("")) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        ObjectId objectId = new ObjectId();
+
         try {
             User _user = userRepository.save(new User(
-                    user.getId(),
+                    objectId,
                     user.getName(),
                     user.getSurname(),
                     user.getMail(),
-                    user.getPassword()
+                    Encrypter.encryptPassword(user.getPassword())
             ));
             return new ResponseEntity<>(_user, HttpStatus.CREATED);
         } catch (Exception e) {
@@ -48,7 +73,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/Users/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<User> updateUser(@PathVariable("id") String id, @RequestBody User user) {
         Optional<User> userOptional = userRepository.findById(id);
 
@@ -66,7 +91,7 @@ public class UserController {
         return new ResponseEntity<>(userRepository.save(_user), HttpStatus.OK);
     }
 
-    @DeleteMapping("/Users/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<HttpStatus> deleteUser(@PathVariable("id") String id) {
         try {
             userRepository.deleteById(id);
@@ -76,7 +101,7 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/Users")
+    @DeleteMapping("/deleteAll")
     public ResponseEntity<HttpStatus> deleteAllUsers() {
         try {
             userRepository.deleteAll();
@@ -85,4 +110,16 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/login")
+    public ResponseEntity<User> login(@RequestParam String email, @RequestParam String password) {
+        User user = userRepository.findByMailAndPassword(email ,Encrypter.encryptPassword(password));
+
+        if (user == null) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        }
+
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
 }
+

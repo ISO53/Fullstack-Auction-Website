@@ -2,6 +2,7 @@ package com.iso.bidding.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -15,7 +16,7 @@ public class Auction implements Runnable{
     private String productId;
     private double startingPrice;
     private double currentBid;
-    private String currentBidderId;
+    private ObjectId currentBidderId;
     private double minimumRaise;
     private long startTime;     // Unix format of time
     private long period;        // Unix format of time

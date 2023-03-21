@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin(origins = "http://localhost:8080")
+@CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequestMapping("/auction")
 public class AuctionController {
@@ -18,12 +18,12 @@ public class AuctionController {
     @Autowired
     AuctionRepository auctionRepository;
 
-    @GetMapping("/Auctions")
+    @GetMapping("/getAll")
     public ResponseEntity<List<Auction>> getAllAuctions(@RequestParam(required = false) String title) {
         return ResponseEntity.ok().body(auctionRepository.findAll());
     }
 
-    @GetMapping("/Auctions/{id}")
+    @GetMapping("/get/{id}")
     public ResponseEntity<Auction> getAuctionById(@PathVariable("id") String id) {
         Optional<Auction> auctionOptional = auctionRepository.findById(id);
 
@@ -32,7 +32,7 @@ public class AuctionController {
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @PostMapping("/Auctions")
+    @PostMapping("/create")
     public ResponseEntity<Auction> createAuction(@RequestBody Auction auction) {
         try {
             Auction _auction = auctionRepository.save(new Auction(
@@ -47,7 +47,7 @@ public class AuctionController {
         }
     }
 
-    @PutMapping("/Auctions/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<Auction> updateAuction(@PathVariable("id") String id, @RequestBody Auction auction) {
         Optional<Auction> auctionOptional = auctionRepository.findById(id);
 
@@ -66,7 +66,7 @@ public class AuctionController {
         return new ResponseEntity<>(auctionRepository.save(_auction), HttpStatus.OK);
     }
 
-    @DeleteMapping("/Auctions/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<HttpStatus> deleteAuction(@PathVariable("id") String id) {
         try {
             auctionRepository.deleteById(id);
@@ -76,7 +76,7 @@ public class AuctionController {
         }
     }
 
-    @DeleteMapping("/Auctions")
+    @DeleteMapping("/deleteAll")
     public ResponseEntity<HttpStatus> deleteAllAuctions() {
         try {
             auctionRepository.deleteAll();
