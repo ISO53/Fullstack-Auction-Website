@@ -3,18 +3,19 @@
 		<div class="form-container sign-up-container">
 			<form action="#">
 				<h1>Create Account</h1>
-				<input type="text" placeholder="Name Surname" pattern="^[A-Za-z]+(?:\s+[A-Za-z]+)+$"/>
-				<input type="email" placeholder="Email" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"/>
-				<input type="password" placeholder="Password" />
-				<button id="register">Sign Up</button>
+				<input id="reg_name" type="text" placeholder="Name" pattern="[A-Za-z]+" />
+				<input id="reg_surname" type="text" placeholder="Surname" pattern="^[A-Za-z]+$" />
+				<input id="reg_mail" type="email" placeholder="Email" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" />
+				<input id="reg_password" type="password" placeholder="Password" />
+				<button id="register" @click="register()">Sign Up</button>
 			</form>
 		</div>
 		<div class="form-container sign-in-container">
 			<form action="#">
 				<h1>Sign in</h1>
-				<input type="email" placeholder="Email" />
-				<input type="password" placeholder="Password" />
-				<button>Sign In</button>
+				<input id="log_mail" type="email" placeholder="Email" />
+				<input id="log_password" type="password" placeholder="Password" />
+				<button id="login" @click="login()">Sign In</button>
 			</form>
 		</div>
 		<div class="overlay-container">
@@ -35,6 +36,34 @@
 </template>
 
 <script>
+function showError(message) {
+	let errDiv = document.getElementById("error_div");
+	let errMsg = errDiv.children[0];
+	errMsg.innerHTML = message;
+
+	// Show the message
+	errDiv.style.transform = "translateY(60px)";
+
+	// Hide the message after 2 second
+	setTimeout(function () {
+		errDiv.style.transform = "translateY(-200px)";
+	}, 4000);
+}
+
+function showMessage(message) {
+	let msgDiv = document.getElementById("message_div");
+	let msgText = msgDiv.children[0];
+	msgText.innerHTML = message;
+
+	// Show the message
+	msgDiv.style.transform = "translateY(60px)";
+
+	// Hide the message after 2 second
+	setTimeout(function () {
+		msgDiv.style.transform = "translateY(-200px)";
+	}, 4000);
+}
+
 export default {
 	methods: {
 		rightPanelActive() {
@@ -42,6 +71,56 @@ export default {
 		},
 		leftPanelActive() {
 			this.$refs.container.classList.remove("right-panel-active");
+		},
+		register() {
+			let v_name = document.getElementById("reg_name").value;
+			let v_surname = document.getElementById("reg_surname").value;
+			let v_mail = document.getElementById("reg_mail").value;
+			let v_password = document.getElementById("reg_password").value;
+
+			const url = "http://localhost:8081/user/create";
+			const data = {
+				name: v_name,
+				surname: v_surname,
+				mail: v_mail,
+				password: v_password,
+			};
+
+			fetch(url, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(data),
+			})
+				.then((response) => response.json())
+				.then((data) => {
+					console.log(data);
+					showMessage("Registration successful!");
+				})
+				.catch((error) => {
+					console.error(error);
+					showError("Registration failed!");
+				});
+		},
+		login() {
+			let v_mail = document.getElementById("log_mail").value;
+			let v_password = document.getElementById("log_password").value;
+
+			const url = "http://localhost:8081/user/login?email=" + v_mail + "&password=" + v_password;
+
+			fetch(url, {
+				method: "GET",
+			})
+				.then((response) => response.json())
+				.then((data) => {
+					console.log(data);
+					showMessage("Login successful!");
+				})
+				.catch((error) => {
+					console.error(error);
+					showError("Login failed!");
+				});
 		},
 	},
 };
@@ -208,9 +287,9 @@ input {
 }
 
 .overlay {
-	background: #ff416c;
-	background: -webkit-linear-gradient(to right, #ff4b2b, #ff416c);
-	background: linear-gradient(to right, #ff4b2b, #ff416c);
+	background: #c42626;
+	background: -webkit-linear-gradient(to right, #ff735a, #c42626);
+	background: linear-gradient(to right, #ff735a, #c42626);
 	background-repeat: no-repeat;
 	background-size: cover;
 	background-position: 0 0;

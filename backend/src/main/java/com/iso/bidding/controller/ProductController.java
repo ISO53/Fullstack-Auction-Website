@@ -1,7 +1,8 @@
 package com.iso.bidding.controller;
 
 import com.iso.bidding.model.Product;
-import com.iso.bidding.repository.ProductRepository;
+import com.iso.bidding.repository.IProductRepository;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,22 +11,22 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin(origins = "http://localhost:8081")
+@CrossOrigin(origins = "http://localhost:8080")
 @RestController
 @RequestMapping("/product")
 public class ProductController {
 
     @Autowired
-    ProductRepository productRepository;
+    IProductRepository IProductRepository;
 
     @GetMapping("/getAll")
-    public ResponseEntity<List<Product>> getAllProducts(@RequestParam(required = false) String title) {
-        return ResponseEntity.ok().body(productRepository.findAll());
+    public ResponseEntity<List<Product>> getAllProducts() {
+        return ResponseEntity.ok().body(IProductRepository.findAll());
     }
 
     @GetMapping("/get/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable("id") String id) {
-        Optional<Product> productOptional = productRepository.findById(id);
+        Optional<Product> productOptional = IProductRepository.findById(new ObjectId(id));
 
         return productOptional.isPresent() ?
                 new ResponseEntity<>(productOptional.get(), HttpStatus.FOUND) :
@@ -35,8 +36,7 @@ public class ProductController {
     @PostMapping("/create")
     public ResponseEntity<Product> createProduct(@RequestBody Product product) {
         try {
-            Product _product = productRepository.save(new Product(
-                    product.getId(),
+            Product _product = IProductRepository.save(new Product(
                     product.getName(),
                     product.getDescription(),
                     product.isPublished(),
@@ -50,7 +50,7 @@ public class ProductController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable("id") String id, @RequestBody Product product) {
-        Optional<Product> productOptional = productRepository.findById(id);
+        Optional<Product> productOptional = IProductRepository.findById(new ObjectId(id));
 
         if (!productOptional.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -63,13 +63,13 @@ public class ProductController {
         _product.setPublished(product.isPublished());
         _product.setImageURL(product.getImageURL());
 
-        return new ResponseEntity<>(productRepository.save(_product), HttpStatus.OK);
+        return new ResponseEntity<>(IProductRepository.save(_product), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<HttpStatus> deleteProduct(@PathVariable("id") String id) {
         try {
-            productRepository.deleteById(id);
+            IProductRepository.deleteById(new ObjectId(id));
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -79,7 +79,7 @@ public class ProductController {
     @DeleteMapping("/deleteAll")
     public ResponseEntity<HttpStatus> deleteAllProducts() {
         try {
-            productRepository.deleteAll();
+            IProductRepository.deleteAll();
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

@@ -1,7 +1,7 @@
 package com.iso.bidding.controller;
 
 import com.iso.bidding.model.User;
-import com.iso.bidding.repository.UserRepository;
+import com.iso.bidding.repository.IUserRepository;
 import com.iso.bidding.utils.Encrypter;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,22 +12,22 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin(origins = "http://localhost:8081")
+@CrossOrigin(origins = "http://localhost:8080")
 @RestController
 @RequestMapping("/user")
 public class UserController {
 
     @Autowired
-    UserRepository userRepository;
+    IUserRepository IUserRepository;
 
     @GetMapping("/getAll")
     public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok().body(userRepository.findAll());
+        return ResponseEntity.ok().body(IUserRepository.findAll());
     }
 
     @GetMapping("/get/{id}")
     public ResponseEntity<User> getUserById(@PathVariable("id") String id) {
-        Optional<User> userOptional = userRepository.findById(id);
+        Optional<User> userOptional = IUserRepository.findById(new ObjectId(id));
 
         return userOptional.isPresent() ?
                 new ResponseEntity<>(userOptional.get(), HttpStatus.FOUND) :
@@ -48,7 +48,7 @@ public class UserController {
         }
 
         // There already is a user registered by this mail
-        if (userRepository.findByMail(user.getMail()) != null) {
+        if (IUserRepository.findByMail(user.getMail()) != null) {
             return new ResponseEntity<>(null, HttpStatus.CONFLICT);
         }
 
@@ -57,11 +57,8 @@ public class UserController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        ObjectId objectId = new ObjectId();
-
         try {
-            User _user = userRepository.save(new User(
-                    objectId,
+            User _user = IUserRepository.save(new User(
                     user.getName(),
                     user.getSurname(),
                     user.getMail(),
@@ -75,7 +72,7 @@ public class UserController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<User> updateUser(@PathVariable("id") String id, @RequestBody User user) {
-        Optional<User> userOptional = userRepository.findById(id);
+        Optional<User> userOptional = IUserRepository.findById(new ObjectId(id));
 
         if (!userOptional.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -88,13 +85,13 @@ public class UserController {
         _user.setMail(user.getMail());
         _user.setPassword(user.getPassword());
 
-        return new ResponseEntity<>(userRepository.save(_user), HttpStatus.OK);
+        return new ResponseEntity<>(IUserRepository.save(_user), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<HttpStatus> deleteUser(@PathVariable("id") String id) {
         try {
-            userRepository.deleteById(id);
+            IUserRepository.deleteById(new ObjectId(id));
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -104,16 +101,16 @@ public class UserController {
     @DeleteMapping("/deleteAll")
     public ResponseEntity<HttpStatus> deleteAllUsers() {
         try {
-            userRepository.deleteAll();
+            IUserRepository.deleteAll();
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @GetMapping("/login")
+    @GetMapping("/login/")
     public ResponseEntity<User> login(@RequestParam String email, @RequestParam String password) {
-        User user = userRepository.findByMailAndPassword(email ,Encrypter.encryptPassword(password));
+        User user = IUserRepository.findByMailAndPassword(email ,Encrypter.encryptPassword(password));
 
         if (user == null) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);

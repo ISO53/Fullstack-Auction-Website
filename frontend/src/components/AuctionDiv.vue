@@ -5,9 +5,14 @@
 		<div class="image_div">
 			<img class="auc_image" src="https://ystyangin.com/wp-content/uploads/dummy-image-square.jpg" alt="" />
 		</div>
+		<div class="auc_headers">
+			<h2 class="auc_head">Started At</h2>
+			<h2 class="auc_head">Current</h2>
+			<h2 class="auc_head">Minimum Raise</h2>
+		</div>
 		<div class="auc_infos">
 			<h2 class="auc_info">##$</h2>
-			<h2 class="auc_info">##$</h2>
+			<h2 id="current_bid" class="auc_info">##$</h2>
 			<h2 class="auc_info">##$</h2>
 		</div>
 		<div class="button_div">
@@ -24,18 +29,21 @@
 .auction {
 	width: 20vw;
 	min-width: 250px;
-	box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.5);
-	transition: box-shadow 150ms ease-out;
 	border-radius: 10px;
+	backdrop-filter: blur(10px) brightness(300%);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	margin: 0px 15px 25px 15px;
+	transition: border 150ms ease-out;
 }
 .auction:hover {
-	box-shadow: 4px 4px 10px 0px rgba(0, 0, 0, 0.5);
+	border: 1px solid rgba(255, 255, 255, 0.4);
 }
 .auc_name {
 	font-family: monospace;
 	font-size: 1.6rem;
 	text-align: center;
 	margin: 15px;
+	color: orangered;
 }
 .desc {
 	font-family: monospace;
@@ -43,6 +51,7 @@
 	color: rgba(0, 0, 0, 0.5);
 	text-align: justify;
 	margin: 5px 25px 5px 25px;
+	color: rgb(200, 200, 200);
 }
 .image_div {
 	width: 100%;
@@ -57,6 +66,28 @@
 	display: flex;
 	flex-direction: row;
 	font-family: monospace;
+	color: beige;
+	justify-content: space-between;
+}
+.auc_info {
+	width: 68px;
+	text-align: center;
+}
+#current_bid {
+	color: orange;
+	font-size: 2rem;
+}
+.auc_headers {
+	display: flex;
+	flex-direction: row;
+	font-family: monospace;
+	color: grey;
+	font-size: 0.5rem;
+	justify-content: space-between;
+}
+.auc_head {
+	width: 100px;
+	text-align: center;
 }
 .button_div {
 	margin: 5px 25px 5px 25px;
@@ -82,11 +113,13 @@
 .input {
 	width: 47%;
 	height: 100%;
-	border: 1px solid rgba(0, 0, 0, 0.5);
+	border: 1px solid rgba(255, 255, 255, 0.4);
 	border-radius: 10px;
 	margin-right: 3%;
 	text-align: center;
 	font-family: monospace;
 	font-size: 1.3rem;
+	background-color: transparent;
+	color: beige;
 }
 </style>

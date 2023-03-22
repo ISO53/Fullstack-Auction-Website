@@ -9,11 +9,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Getter
 @Setter
 @Document(collection = "Auction")
-public class Auction implements Runnable{
+public class Auction implements Runnable {
 
     @Id
-    private String id;
-    private String productId;
+    private ObjectId id;
+    private ObjectId productId;
     private double startingPrice;
     private double currentBid;
     private ObjectId currentBidderId;
@@ -24,8 +24,8 @@ public class Auction implements Runnable{
     private boolean isFinished; // Is auction finished? (Can't be finished if it hasn't started)
     private Thread thread;
 
-    public Auction(String id, String productId, double startingPrice, double minimumRaise, long period) {
-        this.id = id;
+    public Auction(ObjectId productId, double startingPrice, double minimumRaise, long period) {
+        this.id = new ObjectId();
         this.productId = productId;
         this.startingPrice = startingPrice;
         this.currentBid = 0;
@@ -36,6 +36,23 @@ public class Auction implements Runnable{
         this.inProgress = false;
         this.isFinished = false;
         this.thread = new Thread(this);
+    }
+
+    @Override
+    public String toString() {
+        return "Auction{" +
+                "id=" + id +
+                ", productId=" + productId +
+                ", startingPrice=" + startingPrice +
+                ", currentBid=" + currentBid +
+                ", currentBidderId=" + currentBidderId +
+                ", minimumRaise=" + minimumRaise +
+                ", startTime=" + startTime +
+                ", period=" + period +
+                ", inProgress=" + inProgress +
+                ", isFinished=" + isFinished +
+                ", thread=" + thread +
+                '}';
     }
 
     @Override
@@ -67,7 +84,7 @@ public class Auction implements Runnable{
         inProgress = false;
     }
 
-    public boolean bid (User user, double priceOffer) {
+    public boolean bid(User user, double priceOffer) {
         if (priceOffer < currentBid + minimumRaise) {
             System.out.println("Not enough raise!");
             return false;
