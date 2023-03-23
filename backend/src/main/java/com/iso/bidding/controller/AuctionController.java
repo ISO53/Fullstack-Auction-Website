@@ -1,11 +1,15 @@
 package com.iso.bidding.controller;
 
 import com.iso.bidding.model.Auction;
+import com.iso.bidding.model.User;
 import com.iso.bidding.repository.IAuctionRepository;
+import com.iso.bidding.repository.IUserRepository;
+import jakarta.websocket.server.ServerEndpoint;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +22,9 @@ public class AuctionController {
 
     @Autowired
     IAuctionRepository IAuctionRepository;
+
+    @Autowired
+    IUserRepository IUserRepository;
 
     @GetMapping("/getAll")
     public ResponseEntity<List<Auction>> getAllAuctions() {
@@ -87,4 +94,30 @@ public class AuctionController {
         }
     }
 
+    @GetMapping("/bid/{auctionId}/{userId}/{offer}")
+    public ResponseEntity<String> bid(@PathVariable("auctionId") String auctionId, @PathVariable("userId") String userId, @PathVariable("offer") Double offer) {
+        ResponseEntity<Auction> response = getAuctionById(auctionId);
+        Auction auction = response.getBody();
+
+        // Auction not found
+        if (auction == null) {
+            return new ResponseEntity<>("Auction not found!", HttpStatus.NOT_FOUND);
+        }
+
+        Optional<User> userOptional = IUserRepository.findById(userId);
+
+        // User not found
+        if (!userOptional.isPresent()) {
+            return new ResponseEntity<>("User not found!", HttpStatus.NOT_FOUND);
+        }
+
+        boolean bidSuccess = auction.bid(userOptional.get(), offer);
+
+        if (!bidSuccess) {
+            return new ResponseEntity<>("Insufficient bid!", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        updateAuction(auctionId, auction);
+        return new ResponseEntity<>("Success!", HttpStatus.OK);
+    }
 }

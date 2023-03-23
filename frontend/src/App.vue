@@ -31,10 +31,42 @@ import LoginRegisterDiv from "@/components/LoginRegisterDiv.vue";
 import ErrorDiv from "@/components/ErrorDiv.vue";
 import MessageDiv from "@/components/MessageDiv.vue";
 
+var times = [];
+
+function getAuctionTimes() {
+	fetch("http://localhost:8081/auction/getAll")
+		.then((response) => response.json())
+		.then((aucData) => {
+			for (let i = 0; i < 3; i++) {
+				times.push(aucData[i].startTime + aucData[i].period);
+			}
+		})
+		.catch((error) => console.error(error));
+}
+
+function formatUnix(unixTime) {
+	const seconds = Math.floor(unixTime);
+	const days = Math.floor(seconds / (3600 * 24));
+	const hours = Math.floor((seconds % (3600 * 24)) / 3600);
+	const minutes = Math.floor((seconds % 3600) / 60);
+	const remainingSeconds = seconds % 60;
+
+	return `${days}:${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
+}
+
+function startAuctionCountdown() {
+	for (let i = 0; i < times.length; i++) {
+		let auctionDiv = document.getElementById("auc_div_" + (i + 1));
+		let remainingTime = times[i] - Math.floor(Date.now() / 1000);
+		auctionDiv.children[0].children[1].innerHTML = "Time Left " + formatUnix(remainingTime);
+	}
+}
+
 function loadAuctionsDatas() {
 	fetch("http://localhost:8081/auction/getAll")
 		.then((response) => response.json())
 		.then((aucData) => {
+			console.log(aucData);
 			for (let i = 0; i < aucData.length; i++) {
 				fetch("http://localhost:8081/product/get/" + aucData[i].productId)
 					.then((response) => response.json())
@@ -43,7 +75,7 @@ function loadAuctionsDatas() {
 						let auctionDiv = document.getElementById("auc_div_" + (i + 1));
 
 						// Load the product informations to the auc div
-						auctionDiv.children[0].innerHTML = proData.name;
+						auctionDiv.children[0].children[0].innerHTML = proData.name;
 						auctionDiv.children[1].innerHTML = proData.description;
 						auctionDiv.children[2].children[0].src = proData.imageURL;
 
@@ -52,9 +84,13 @@ function loadAuctionsDatas() {
 						auctionDiv.children[4].children[1].innerHTML = aucData[i].currentBid + "$";
 						auctionDiv.children[4].children[2].innerHTML = aucData[i].minimumRaise + "$";
 
-						// Pass the product id to bid button for later use
-						auctionDiv.children[5].children[1].id = proData.id;
-						
+						// Pass the auction id to bid button for further use
+						auctionDiv.children[5].children[1].id = aucData[i].id;
+
+						// Make the minimum value for a user to bid to startingPrice + minimumRaise
+						auctionDiv.children[5].children[0].min = aucData[i].startingPrice + aucData[i].minimumRaise
+						auctionDiv.children[5].children[0].value = aucData[i].startingPrice + aucData[i].minimumRaise
+
 						console.log("Auction data loaded.");
 					})
 					.catch((error) => console.error(error));
@@ -66,6 +102,10 @@ function loadAuctionsDatas() {
 export default {
 	mounted() {
 		loadAuctionsDatas();
+		getAuctionTimes();
+
+		setInterval(startAuctionCountdown, 1000);
+		startAuctionCountdown();
 	},
 	name: "App",
 	components: {

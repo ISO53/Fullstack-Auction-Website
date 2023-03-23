@@ -1,6 +1,9 @@
 <template>
 	<div class="auction">
-		<h1 class="auc_name">Product</h1>
+		<div class="top_div">
+			<h1 class="auc_name">Product</h1>
+			<h1 class="auc_time">Time Left 00:00:00:00</h1>
+		</div>
 		<h2 class="desc">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Distinctio blanditiis ipsam rem odio.</h2>
 		<div class="image_div">
 			<img class="auc_image" src="https://ystyangin.com/wp-content/uploads/dummy-image-square.jpg" alt="" />
@@ -16,18 +19,37 @@
 			<h2 class="auc_info">##$</h2>
 		</div>
 		<div class="button_div">
-			<input type="number" name="bid" class="input" />
-			<button class="button">BID</button>
+			<input id="offer_input" type="number" name="bid" class="input" />
+			<button class="button" @click="bidRequest($event)">BID</button>
 		</div>
 	</div>
 </template>
 
-<script></script>
+<script>
+export default {
+	mounted() {},
+	methods: {
+		bidRequest(event) {
+			let auctionId = event.target.id;
+			let userId = "ads"; // Get from Redis
+			let offer = document.getElementById("offer_input").value;
+			console.log("http://localhost:8081/auction/bid/" + auctionId + "/" + userId + "/" + offer);
+
+			fetch("http://localhost:8081/auction/bid/" + auctionId + "/" + userId + "/" + offer)
+				.then((response) => response.json())
+				.then((data) => {
+					console.log(data);
+				})
+				.catch((error) => console.error(error));
+		},
+	},
+};
+</script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .auction {
-	width: 20vw;
+	width: 22vw;
 	min-width: 250px;
 	border-radius: 10px;
 	backdrop-filter: blur(10px) brightness(300%);
@@ -38,12 +60,24 @@
 .auction:hover {
 	border: 1px solid rgba(255, 255, 255, 0.4);
 }
+.top_div {
+	display: flex;
+	flex-direction: row;
+}
 .auc_name {
 	font-family: monospace;
 	font-size: 1.6rem;
 	text-align: center;
-	margin: 15px;
+	margin: 10px 0px 10px 25px;
 	color: orangered;
+}
+.auc_time {
+	font-family: monospace;
+	font-size: 1rem;
+	text-align: right;
+	width: 100%;
+	margin: 15px;
+	color: red;
 }
 .desc {
 	font-family: monospace;
