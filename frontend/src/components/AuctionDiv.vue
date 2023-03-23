@@ -18,6 +18,9 @@
 			<h2 id="current_bid" class="auc_info">##$</h2>
 			<h2 class="auc_info">##$</h2>
 		</div>
+		<div class="bidder">
+			<h2 class="auc_bidder">Current Bidder:</h2>
+		</div>
 		<div class="button_div">
 			<input id="offer_input" type="number" name="bid" class="input" />
 			<button class="button" @click="bidRequest($event)">BID</button>
@@ -106,6 +109,14 @@ export default {
 .auc_info {
 	width: 68px;
 	text-align: center;
+}
+.auc_bidder {
+	width: 100%;
+	text-align: center;
+	color: blanchedalmond;
+	font-weight: 100;
+	font-family: monospace;
+	font-size: 1rem;
 }
 #current_bid {
 	color: orange;

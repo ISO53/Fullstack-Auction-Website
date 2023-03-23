@@ -4,11 +4,15 @@ import com.iso.bidding.model.Auction;
 import com.iso.bidding.model.User;
 import com.iso.bidding.repository.IAuctionRepository;
 import com.iso.bidding.repository.IUserRepository;
+import com.iso.bidding.utils.WebSocket;
 import jakarta.websocket.server.ServerEndpoint;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,10 +25,13 @@ import java.util.Optional;
 public class AuctionController {
 
     @Autowired
-    IAuctionRepository IAuctionRepository;
+    private IAuctionRepository IAuctionRepository;
 
     @Autowired
-    IUserRepository IUserRepository;
+    private IUserRepository IUserRepository;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @GetMapping("/getAll")
     public ResponseEntity<List<Auction>> getAllAuctions() {
@@ -70,6 +77,10 @@ public class AuctionController {
         _auction.setMinimumRaise(auction.getMinimumRaise());
         _auction.setStartTime(auction.getStartTime());
         _auction.setPeriod(auction.getPeriod());
+        _auction.setCurrentBid(auction.getCurrentBid());
+        _auction.setCurrentBidderId(auction.getCurrentBidderId());
+        _auction.setInProgress(auction.isInProgress());
+        _auction.setFinished(auction.isFinished());
 
         return new ResponseEntity<>(IAuctionRepository.save(_auction), HttpStatus.OK);
     }
@@ -117,7 +128,29 @@ public class AuctionController {
             return new ResponseEntity<>("Insufficient bid!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        updateAuction(auctionId, auction);
+        ResponseEntity<Auction> responseEntity = updateAuction(auctionId, auction);
+        if (responseEntity.getStatusCode().isError()) {
+            return new ResponseEntity<>("Something went wrong during update process.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        // Bid success mean data changed in the auctions. Frontend must be signaled
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("aucId", auction.getId());
+            jsonObject.put("bidderId", auction.getCurrentBidderId());
+            jsonObject.put("currentBid", auction.getCurrentBid());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        messagingTemplate.convertAndSend("/bid/update", jsonObject.toString());
+
         return new ResponseEntity<>("Success!", HttpStatus.OK);
+    }
+
+    @GetMapping("trying")
+    public ResponseEntity trying() {
+        messagingTemplate.convertAndSend("/bid/update", "deneme");
+        return new ResponseEntity(HttpStatus.OK);
     }
 }

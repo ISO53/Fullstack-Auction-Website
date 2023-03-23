@@ -18,7 +18,7 @@ import java.util.Optional;
 public class UserController {
 
     @Autowired
-    IUserRepository IUserRepository;
+    private IUserRepository IUserRepository;
 
     @GetMapping("/getAll")
     public ResponseEntity<List<User>> getAllUsers() {
@@ -108,7 +108,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/login/")
+    @GetMapping("/login")
     public ResponseEntity<User> login(@RequestParam String email, @RequestParam String password) {
         User user = IUserRepository.findByMailAndPassword(email ,Encrypter.encryptPassword(password));
 

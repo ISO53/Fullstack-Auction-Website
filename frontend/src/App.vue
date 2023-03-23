@@ -30,6 +30,8 @@ import AuctionDiv from "@/components/AuctionDiv.vue";
 import LoginRegisterDiv from "@/components/LoginRegisterDiv.vue";
 import ErrorDiv from "@/components/ErrorDiv.vue";
 import MessageDiv from "@/components/MessageDiv.vue";
+import SockJS from "sockjs-client";
+import { Client } from "@stomp/stompjs";
 
 var times = [];
 
@@ -62,6 +64,39 @@ function startAuctionCountdown() {
 	}
 }
 
+function listenWebSocketForBackendUpdates() {
+	const socket = new SockJS("http://localhost:8081/websocket");
+	const stompClient = new Client({
+		brokerURL: "/websocket",
+		webSocketFactory: () => socket,
+	});
+
+	stompClient.activate();
+	stompClient.onConnect = function () {
+		console.log("Connected to websocket.");
+
+		stompClient.subscribe("/bid/update", function (message) {
+			console.log("Received message: " + message.body);
+			updateAuctionDiv(JSON.parse(message.body));
+		});
+	};
+}
+
+function updateAuctionDiv(data) {
+	let aucDiv = document.getElementById(data.aucId).parentElement.parentElement;
+
+	aucDiv.children[4].children[1].innerHTML = data.currentBid + "$";
+	aucDiv.children[6].children[0].value = data.currentBid + parseInt(aucDiv.children[4].children[2].textContent.slice(0, -1));
+	aucDiv.children[6].children[0].min = data.currentBid + parseInt(aucDiv.children[4].children[2].textContent.slice(0, -1));
+
+	fetch("http://localhost:8081/user/get/" + data.bidderId)
+		.then((response) => response.json())
+		.then((userData) => {
+			aucDiv.children[5].children[0].innerHTML = "Cuurent Bidder: " + userData.name + " " + userData.surname;
+		})
+		.catch((error) => console.error(error));
+}
+
 function loadAuctionsDatas() {
 	fetch("http://localhost:8081/auction/getAll")
 		.then((response) => response.json())
@@ -85,13 +120,22 @@ function loadAuctionsDatas() {
 						auctionDiv.children[4].children[2].innerHTML = aucData[i].minimumRaise + "$";
 
 						// Pass the auction id to bid button for further use
-						auctionDiv.children[5].children[1].id = aucData[i].id;
+						auctionDiv.children[6].children[1].id = aucData[i].id;
 
 						// Make the minimum value for a user to bid to startingPrice + minimumRaise
-						auctionDiv.children[5].children[0].min = aucData[i].startingPrice + aucData[i].minimumRaise
-						auctionDiv.children[5].children[0].value = aucData[i].startingPrice + aucData[i].minimumRaise
+						auctionDiv.children[6].children[0].min = aucData[i].currentBid + aucData[i].minimumRaise;
+						auctionDiv.children[6].children[0].value = aucData[i].currentBid + aucData[i].minimumRaise;
+					})
+					.catch((error) => console.error(error));
 
-						console.log("Auction data loaded.");
+				fetch("http://localhost:8081/user/get/" + aucData[i].currentBidderId)
+					.then((response) => response.json())
+					.then((userData) => {
+						// Get the auction div
+						let auctionDiv = document.getElementById("auc_div_" + (i + 1));
+
+						// Make the minimum value for a user to bid to startingPrice + minimumRaise
+						auctionDiv.children[5].children[0].innerHTML = "Current Bidder: " + userData.name + " " + userData.surname;
 					})
 					.catch((error) => console.error(error));
 			}
@@ -106,6 +150,8 @@ export default {
 
 		setInterval(startAuctionCountdown, 1000);
 		startAuctionCountdown();
+
+		listenWebSocketForBackendUpdates();
 	},
 	name: "App",
 	components: {

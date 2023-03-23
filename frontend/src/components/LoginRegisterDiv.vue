@@ -1,4 +1,4 @@
-<template>
+<template xmlns:th="http://www.thymeleaf.org">
 	<div class="container" ref="container">
 		<div class="form-container sign-up-container">
 			<form action="#">
@@ -36,6 +36,51 @@
 </template>
 
 <script>
+
+function redisSessionPost() {
+	const formData = new FormData();
+	let emailInput = document.getElementById("log_mail");
+	let passwordInput = document.getElementById("log_password");
+
+	formData.append("msg", `${emailInput.value} - ${passwordInput.value}`);
+
+	fetch("http://localhost:8081/persistMessage", {
+		method: "POST",
+		body: formData,
+	})
+		.then((response) => {
+			if (response.ok) {
+				return response.json();
+			}
+			throw new Error("Network response was not ok.");
+		})
+		.then((data) => {
+			console.log("Response data:", data);
+		})
+		.catch((error) => {
+			console.error("There was a problem with the fetch operation:", error);
+		});
+}
+
+window.addEventListener("click", () => {
+	console.log(getSessionId());
+});
+
+function getSessionId() {
+	const cookies = document.cookie.split(";");
+
+	for (let i = 0; i < cookies.length; i++) {
+		const cookie = cookies[i].trim();
+
+		if (cookie.startsWith("JSESSIONID")) {
+			const sessionId = cookie.substring("JSESSIONID=".length, cookie.length);
+			return sessionId;
+		}
+
+		return null;
+	}
+}
+
 function showError(message) {
 	let errDiv = document.getElementById("error_div");
 	let errMsg = errDiv.children[0];
@@ -116,6 +161,8 @@ export default {
 				.then((data) => {
 					console.log(data);
 					showMessage("Login successful!");
+
+					redisSessionPost();
 				})
 				.catch((error) => {
 					console.error(error);

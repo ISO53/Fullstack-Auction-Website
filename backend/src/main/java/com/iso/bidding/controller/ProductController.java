@@ -17,7 +17,7 @@ import java.util.Optional;
 public class ProductController {
 
     @Autowired
-    IProductRepository IProductRepository;
+    private IProductRepository IProductRepository;
 
     @GetMapping("/getAll")
     public ResponseEntity<List<Product>> getAllProducts() {

@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Getter
 @Setter
 @Document(collection = "Auction")
-public class Auction implements Runnable {
+public class Auction{
 
     @Id
     private ObjectId id;
@@ -22,7 +22,6 @@ public class Auction implements Runnable {
     private long period;        // Unix format of time
     private boolean inProgress; // Is auction in progress?
     private boolean isFinished; // Is auction finished? (Can't be finished if it hasn't started)
-    private Thread thread;
 
     public Auction(ObjectId productId, double startingPrice, double minimumRaise, long period) {
         this.id = new ObjectId();
@@ -35,7 +34,6 @@ public class Auction implements Runnable {
         this.period = period;
         this.inProgress = false;
         this.isFinished = false;
-        this.thread = new Thread(this);
     }
 
     @Override
@@ -51,37 +49,7 @@ public class Auction implements Runnable {
                 ", period=" + period +
                 ", inProgress=" + inProgress +
                 ", isFinished=" + isFinished +
-                ", thread=" + thread +
                 '}';
-    }
-
-    @Override
-    public void run() {
-        while ((startTime + period > System.currentTimeMillis()) && inProgress) {
-            // Wait. Auction is on progress...
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        System.out.println("Auction has ended!");
-        // Auction has ended by time or manually
-        // close the "inProgress" just in case
-        inProgress = false;
-
-        // this.currentBidder won the auction with this.currentBid amount of money
-    }
-
-    public void start() {
-        this.startTime = System.currentTimeMillis();
-        this.inProgress = true;
-        this.thread.start();
-    }
-
-    public void end() {
-        inProgress = false;
     }
 
     public boolean bid(User user, double priceOffer) {
