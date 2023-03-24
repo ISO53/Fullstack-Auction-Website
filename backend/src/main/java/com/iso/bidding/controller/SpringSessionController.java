@@ -1,54 +1,50 @@
 package com.iso.bidding.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
+@CrossOrigin(origins = "http://localhost:8080")
 @Controller
+@RequestMapping("/session")
 public class SpringSessionController {
 
-    private final String S = "SESSION_MESSAGES";
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
 
-    @GetMapping("/")
-    public String home(Model model, HttpSession session) {
-        @SuppressWarnings("unchecked")
-        List<String> messages = (List<String>) session.getAttribute(S);
+    @PostMapping("/add")
+    @ResponseBody
+    public ResponseEntity<Map<String, String>> addSession(@RequestParam("sesInf") String sessionInformation) {
+        String hash = UUID.randomUUID().toString();
+        redisTemplate.opsForHash().put(hash, "sessionInfo", sessionInformation);
+        redisTemplate.expire(hash, 60, TimeUnit.DAYS);
 
-        if (messages == null) {
-            messages = new ArrayList<>();
-        }
+        Map<String, String> data = new HashMap<>();
+        data.put("hash", hash);
 
-        model.addAttribute("sessionMessages", messages);
-        model.addAttribute("sessionId", session.getId());
-
-        return "index";
+        return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
-    @PostMapping("/persistMessage")
-    public String persistMessage(@RequestParam("msg") String msg, HttpServletRequest request) {
-        @SuppressWarnings("unchecked")
-        List<String> messages = (List<String>) request.getSession().getAttribute(S);
+    @GetMapping("/get/{hash}")
+    @ResponseBody
+    public ResponseEntity<Map<String, String>> getSession(@PathVariable("hash") String hash) {
+        String storedInformation = redisTemplate.opsForHash().get(hash, "sessionInfo").toString();
+        String[] information = storedInformation.split("#_#", 2);
 
-        if (messages == null) {
-            messages = new ArrayList<>();
-            request.getSession().setAttribute(S, msg);
-        }
+        Map<String, String> data = new HashMap<>();
+        data.put("email", information[0]);
+        data.put("password", information[1]);
 
-        messages.add(msg);
-        request.getSession().setAttribute(S, msg);
-        return "redirect:/";
-    }
-
-    @PostMapping("/destroy")
-    public String destroySession(HttpServletRequest request) {
-        request.getSession().invalidate();
-        return "redirect:/";
+        return new ResponseEntity<>(data, HttpStatus.FOUND);
     }
 }

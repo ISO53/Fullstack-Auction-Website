@@ -11,7 +11,7 @@
 			</form>
 		</div>
 		<div class="form-container sign-in-container">
-			<form action="#">
+			<form id="login_form">
 				<h1>Sign in</h1>
 				<input id="log_mail" type="email" placeholder="Email" />
 				<input id="log_password" type="password" placeholder="Password" />
@@ -36,35 +36,33 @@
 </template>
 
 <script>
-
-function redisSessionPost() {
+function redisSession() {
 	const formData = new FormData();
 	let emailInput = document.getElementById("log_mail");
 	let passwordInput = document.getElementById("log_password");
 
-	formData.append("msg", `${emailInput.value} - ${passwordInput.value}`);
+	let jsonString = `${emailInput.value}#_#${passwordInput.value}`;
+	formData.append("sesInf", jsonString);
 
-	fetch("http://localhost:8081/persistMessage", {
+	fetch("http://localhost:8081/session/add", {
 		method: "POST",
 		body: formData,
 	})
-		.then((response) => {
-			if (response.ok) {
-				return response.json();
-			}
-			throw new Error("Network response was not ok.");
-		})
+		.then((response) => response.json())
 		.then((data) => {
 			console.log("Response data:", data);
+
+			// Backend sends the session hash back to let us add to the cookies
+			document.cookie = `SESSION_HASH=${data.hash}; path=/`;
 		})
 		.catch((error) => {
 			console.error("There was a problem with the fetch operation:", error);
 		});
 }
 
-window.addEventListener("click", () => {
-	console.log(getSessionId());
-});
+// function getCurrentUserId() {
+// 	return sessionStorage.getItem("CURRENT_USER_ID");
+// }
 
 function getSessionId() {
 	const cookies = document.cookie.split(";");
@@ -72,12 +70,30 @@ function getSessionId() {
 	for (let i = 0; i < cookies.length; i++) {
 		const cookie = cookies[i].trim();
 
-		if (cookie.startsWith("JSESSIONID")) {
-			const sessionId = cookie.substring("JSESSIONID=".length, cookie.length);
+		if (cookie.startsWith("SESSION_HASH")) {
+			const sessionId = cookie.substring("SESSION_HASH=".length, cookie.length);
 			return sessionId;
 		}
 
 		return null;
+	}
+}
+
+function manageCurrentSession() {
+	// Check if there is a previously saved session in cookies
+	let sessionId = getSessionId();
+	if (sessionId !== null) {
+		fetch("http://localhost:8081/session/get/" + sessionId)
+			.then((response) => response.json())
+			.then((data) => {
+				fetch("http://localhost:8081/user/login?email=" + data.email + "&password=" + data.password)
+					.then((response) => response.json())
+					.then((data) => sessionStorage.setItem("CURRENT_USER_ID", data.id))
+					.catch((error) => console.error(error));
+			})
+			.catch((error) => {
+				console.error("There was a problem with the fetch operation:", error);
+			});
 	}
 }
 
@@ -110,6 +126,15 @@ function showMessage(message) {
 }
 
 export default {
+	mounted() {
+		manageCurrentSession();
+
+		var form = document.getElementById("login_form");
+		function handleForm(event) {
+			event.preventDefault();
+		}
+		form.addEventListener("submit", handleForm);
+	},
 	methods: {
 		rightPanelActive() {
 			this.$refs.container.classList.add("right-panel-active");
@@ -153,7 +178,6 @@ export default {
 			let v_password = document.getElementById("log_password").value;
 
 			const url = "http://localhost:8081/user/login?email=" + v_mail + "&password=" + v_password;
-
 			fetch(url, {
 				method: "GET",
 			})
@@ -162,7 +186,9 @@ export default {
 					console.log(data);
 					showMessage("Login successful!");
 
-					redisSessionPost();
+					sessionStorage.setItem("CURRENT_USER_ID", data.id);
+
+					redisSession();
 				})
 				.catch((error) => {
 					console.error(error);
