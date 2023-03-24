@@ -10,7 +10,7 @@
 				<img id="login_button" @click="openLoginRegister()" src="../src/assets/login.svg" alt="" />
 			</div>
 
-			<div class="auctions">
+			<div class="auctions" id="auctions">
 				<AuctionDiv id="auc_div_1"></AuctionDiv>
 				<AuctionDiv id="auc_div_2"></AuctionDiv>
 				<AuctionDiv id="auc_div_3"></AuctionDiv>
@@ -143,10 +143,45 @@ function loadAuctionsDatas() {
 		.catch((error) => console.error(error));
 }
 
+function getSessionId() {
+	const cookies = document.cookie.split(";");
+
+	for (let i = 0; i < cookies.length; i++) {
+		const cookie = cookies[i].trim();
+
+		if (cookie.startsWith("SESSION_HASH")) {
+			const sessionId = cookie.substring("SESSION_HASH=".length, cookie.length);
+			return sessionId;
+		}
+
+		return null;
+	}
+}
+
+function manageCurrentSession() {
+	// Check if there is a previously saved session in cookies
+	let sessionId = getSessionId();
+	if (sessionId !== null) {
+		fetch("http://localhost:8081/session/get/" + sessionId)
+			.then((response) => response.json())
+			.then((data) => {
+				fetch("http://localhost:8081/user/login?email=" + data.email + "&password=" + data.password)
+					.then((response) => response.json())
+					.then((data) => sessionStorage.setItem("CURRENT_USER_ID", data.id))
+					.catch((error) => console.error(error));
+			})
+			.catch((error) => {
+				console.error("There was a problem with the fetch operation:", error);
+			});
+	}
+}
+
 export default {
 	mounted() {
 		loadAuctionsDatas();
 		getAuctionTimes();
+
+		manageCurrentSession();
 
 		setInterval(startAuctionCountdown, 1000);
 		startAuctionCountdown();

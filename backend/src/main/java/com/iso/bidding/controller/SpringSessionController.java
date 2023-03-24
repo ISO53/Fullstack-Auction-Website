@@ -39,6 +39,11 @@ public class SpringSessionController {
     @ResponseBody
     public ResponseEntity<Map<String, String>> getSession(@PathVariable("hash") String hash) {
         String storedInformation = redisTemplate.opsForHash().get(hash, "sessionInfo").toString();
+
+        if (storedInformation == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
         String[] information = storedInformation.split("#_#", 2);
 
         Map<String, String> data = new HashMap<>();

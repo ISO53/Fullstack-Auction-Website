@@ -29,12 +29,33 @@
 </template>
 
 <script>
+function getCurrentUserId() {
+	return sessionStorage.getItem("CURRENT_USER_ID");
+}
+
+function manageBidButtons() {
+	let currentUserId = getCurrentUserId();
+	if (currentUserId === undefined || currentUserId === null) {
+		let auctions = document.getElementById("auctions");
+
+		for (let i = 0; i < 3; i++) {
+			let button = auctions.children[i].children[6].children[1];
+			button.disabled = true;
+			button.style.backgroundColor = "grey";
+			button.style.borderColor = "grey";
+		}
+	}
+}
+
 export default {
-	mounted() {},
+	mounted() {
+		manageBidButtons();
+	},
 	methods: {
 		bidRequest(event) {
+			console.log("DENEME");
 			let auctionId = event.target.id;
-			let userId = "ads"; // Get from Redis
+			let userId = getCurrentUserId(); // Get from Redis
 			let offer = document.getElementById("offer_input").value;
 			console.log("http://localhost:8081/auction/bid/" + auctionId + "/" + userId + "/" + offer);
 

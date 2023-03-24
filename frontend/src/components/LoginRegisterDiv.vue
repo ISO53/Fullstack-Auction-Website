@@ -60,43 +60,6 @@ function redisSession() {
 		});
 }
 
-// function getCurrentUserId() {
-// 	return sessionStorage.getItem("CURRENT_USER_ID");
-// }
-
-function getSessionId() {
-	const cookies = document.cookie.split(";");
-
-	for (let i = 0; i < cookies.length; i++) {
-		const cookie = cookies[i].trim();
-
-		if (cookie.startsWith("SESSION_HASH")) {
-			const sessionId = cookie.substring("SESSION_HASH=".length, cookie.length);
-			return sessionId;
-		}
-
-		return null;
-	}
-}
-
-function manageCurrentSession() {
-	// Check if there is a previously saved session in cookies
-	let sessionId = getSessionId();
-	if (sessionId !== null) {
-		fetch("http://localhost:8081/session/get/" + sessionId)
-			.then((response) => response.json())
-			.then((data) => {
-				fetch("http://localhost:8081/user/login?email=" + data.email + "&password=" + data.password)
-					.then((response) => response.json())
-					.then((data) => sessionStorage.setItem("CURRENT_USER_ID", data.id))
-					.catch((error) => console.error(error));
-			})
-			.catch((error) => {
-				console.error("There was a problem with the fetch operation:", error);
-			});
-	}
-}
-
 function showError(message) {
 	let errDiv = document.getElementById("error_div");
 	let errMsg = errDiv.children[0];
@@ -127,8 +90,6 @@ function showMessage(message) {
 
 export default {
 	mounted() {
-		manageCurrentSession();
-
 		var form = document.getElementById("login_form");
 		function handleForm(event) {
 			event.preventDefault();
