@@ -58,6 +58,11 @@ public class Auction{
             return false;
         }
 
+        if (startTime + period < System.currentTimeMillis()) {
+            System.out.println("Auction already ended");
+            return false;
+        }
+
         this.currentBid = priceOffer;
         this.currentBidderId = user.getId();
         return true;

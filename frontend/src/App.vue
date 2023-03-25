@@ -1,13 +1,13 @@
 <template>
 	<div id="app">
-		<main id="main">
+		<main id="main" @click="handleAccountClick">
 			<ErrorDiv id="error_div"></ErrorDiv>
 			<MessageDiv id="message_div"></MessageDiv>
 
 			<div class="top_bar">
 				<img id="logo" @click="refresh()" src="../src/assets/logo.png" alt="" />
 				<h1>Auction.co</h1>
-				<img id="login_button" @click="openLoginRegister()" src="../src/assets/login.svg" alt="" />
+				<img id="login_button" @click="openAccount()" src="../src/assets/login.svg" alt="" />
 			</div>
 
 			<div class="auctions" id="auctions">
@@ -20,6 +20,11 @@
 
 			<div id="login_register_outer_div" class="login_register_outer_div" @click="handleClick">
 				<LoginRegisterDiv id="login_register_div" class="login_register_div"></LoginRegisterDiv>
+			</div>
+
+			<div id="account_info">
+				<h1 id="username">...</h1>
+				<button id="log_out" @click="logOutClick">Log Out</button>
 			</div>
 		</main>
 	</div>
@@ -97,6 +102,20 @@ function updateAuctionDiv(data) {
 		.catch((error) => console.error(error));
 }
 
+function manageBidButtons() {
+	let currentUserId = getCurrentUserId();
+	if (currentUserId === undefined || currentUserId === null) {
+		let auctions = document.getElementById("auctions");
+
+		for (let i = 0; i < 3; i++) {
+			let button = auctions.children[i].children[6].children[1];
+			button.disabled = true;
+			button.style.backgroundColor = "grey";
+			button.style.borderColor = "grey";
+		}
+	}
+}
+
 function loadAuctionsDatas() {
 	fetch("http://localhost:8081/auction/getAll")
 		.then((response) => response.json())
@@ -158,6 +177,10 @@ function getSessionId() {
 	}
 }
 
+function getCurrentUserId() {
+	return sessionStorage.getItem("CURRENT_USER_ID");
+}
+
 function manageCurrentSession() {
 	// Check if there is a previously saved session in cookies
 	let sessionId = getSessionId();
@@ -182,6 +205,7 @@ export default {
 		getAuctionTimes();
 
 		manageCurrentSession();
+		manageBidButtons();
 
 		setInterval(startAuctionCountdown, 1000);
 		startAuctionCountdown();
@@ -201,6 +225,23 @@ export default {
 		},
 		refresh() {
 			location.reload(true);
+		},
+		openAccount() {
+			let currentUserId = getCurrentUserId();
+			if (currentUserId === undefined || currentUserId === null) {
+				this.openLoginRegister();
+			} else {
+				// User logged in
+				let accountInfo = document.getElementById("account_info");
+
+				fetch("http://localhost:8081/user/get/" + currentUserId)
+					.then((response) => response.json())
+					.then((data) => {
+						accountInfo.children[0].innerHTML = data.name + " " + data.surname;
+						accountInfo.style.display = "flex";
+					})
+					.catch((error) => console.error(error));
+			}
 		},
 		openLoginRegister() {
 			let loginRegisterOuterDiv = document.getElementById("login_register_outer_div");
@@ -225,6 +266,18 @@ export default {
 				}, 150);
 			}
 		},
+		handleAccountClick(event) {
+			let accountInfo = document.getElementById("account_info");
+			if (!accountInfo.contains(event.target)) {
+				accountInfo.style.display = "none";
+			}
+		},
+		logOutClick() {
+			sessionStorage.removeItem("CURRENT_USER_ID");
+			document.cookie = `SESSION_HASH=${getSessionId()}; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC`;
+			document.getElementById("account_info").style.display = "none";
+			location.reload();
+		}
 	},
 };
 </script>
@@ -264,6 +317,42 @@ body {
 	.auctions {
 		flex-direction: column;
 	}
+}
+
+#account_info {
+	position: absolute;
+	right: 9vw;
+	top: 60px;
+	display: none;
+	flex-direction: column;
+	border-radius: 10px;
+	backdrop-filter: blur(10px) brightness(300%);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	padding: 10px;
+}
+
+#username {
+	font-family: monospace;
+	font-size: 1.3rem;
+	color: white;
+}
+
+#log_out {
+	background-color: orangered;
+	width: 120px;
+	height: 40px;
+	border: 1px solid orangered;
+	border-radius: 10px;
+	margin-top: 15px;
+	transition: background-color 250ms ease-out;
+	color: white;
+	font-family: monospace;
+	font-size: 16px;
+	font-weight: 900;
+}
+
+#log_out:hover {
+	background-color: rgb(255, 95, 37);
 }
 
 .top_bar {

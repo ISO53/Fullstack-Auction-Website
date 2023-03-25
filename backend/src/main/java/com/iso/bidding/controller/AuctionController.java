@@ -112,25 +112,25 @@ public class AuctionController {
 
         // Auction not found
         if (auction == null) {
-            return new ResponseEntity<>("Auction not found!", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         Optional<User> userOptional = IUserRepository.findById(userId);
 
         // User not found
         if (!userOptional.isPresent()) {
-            return new ResponseEntity<>("User not found!", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         boolean bidSuccess = auction.bid(userOptional.get(), offer);
 
         if (!bidSuccess) {
-            return new ResponseEntity<>("Insufficient bid!", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         ResponseEntity<Auction> responseEntity = updateAuction(auctionId, auction);
         if (responseEntity.getStatusCode().isError()) {
-            return new ResponseEntity<>("Something went wrong during update process.", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         // Bid success mean data changed in the auctions. Frontend must be signaled
@@ -145,12 +145,6 @@ public class AuctionController {
 
         messagingTemplate.convertAndSend("/bid/update", jsonObject.toString());
 
-        return new ResponseEntity<>("Success!", HttpStatus.OK);
-    }
-
-    @GetMapping("trying")
-    public ResponseEntity trying() {
-        messagingTemplate.convertAndSend("/bid/update", "deneme");
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

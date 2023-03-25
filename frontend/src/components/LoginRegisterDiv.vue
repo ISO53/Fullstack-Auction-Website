@@ -150,6 +150,8 @@ export default {
 					sessionStorage.setItem("CURRENT_USER_ID", data.id);
 
 					redisSession();
+
+					location.reload();
 				})
 				.catch((error) => {
 					console.error(error);
