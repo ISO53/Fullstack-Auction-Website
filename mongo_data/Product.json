@@ -1,0 +1,25 @@
+[{
+  "_id": {
+    "$oid": "6415d8caf3f35aecdfb88c35"
+  },
+  "name": "Antique Table",
+  "description": "In congue. Etiam justo. Etiam pretium iaculis justo. In hac habitasse platea dictumst. Etiam faucibus cursus urna. Ut tellus.",
+  "published": false,
+  "imageURL": "https://cdn.shopify.com/s/files/1/0083/2471/0466/files/30-0508_1_1_2-1024x650.png"
+},{
+  "_id": {
+    "$oid": "6415d8caf3f35aecdfb88c36"
+  },
+  "name": "Piano",
+  "description": "Integer tincidunt ante vel ipsum. Praesent blandit lacinia erat. Vestibulum sed magna at nunc commodo placerat.",
+  "published": false,
+  "imageURL": "https://www.musiccitypianos.com/information/ewExternalFiles/YUS5_PE%20T.png"
+},{
+  "_id": {
+    "$oid": "6415d8caf3f35aecdfb88c37"
+  },
+  "name": "Computer",
+  "description": "Maecenas ut massa quis augue luctus tincidunt. Nulla mollis molestie lorem. Quisque ut erat..",
+  "published": false,
+  "imageURL": "https://img-prod-cms-rt-microsoft-com.akamaized.net/cms/api/am/imageFileData/RE50yvl?ver=ced0"
+}]

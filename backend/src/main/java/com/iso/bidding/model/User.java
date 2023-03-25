@@ -1,6 +1,5 @@
 package com.iso.bidding.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;

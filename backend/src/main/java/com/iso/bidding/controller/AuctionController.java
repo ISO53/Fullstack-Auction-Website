@@ -4,8 +4,6 @@ import com.iso.bidding.model.Auction;
 import com.iso.bidding.model.User;
 import com.iso.bidding.repository.IAuctionRepository;
 import com.iso.bidding.repository.IUserRepository;
-import com.iso.bidding.utils.WebSocket;
-import jakarta.websocket.server.ServerEndpoint;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
@@ -13,7 +11,6 @@ import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

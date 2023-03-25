@@ -1,0 +1,46 @@
+[{
+  "_id": {
+    "$oid": "64173899562356b106b95128"
+  },
+  "name": "Jolene",
+  "surname": "Benitti",
+  "mail": "jbenitti0@ocn.ne.jp",
+  "password": "8f37491f3a3539f0b9a6306efb9efe520251a15b4d6317b741de73ae05f3a4f5",
+  "_class": "com.iso.bidding.model.User"
+},{
+  "_id": {
+    "$oid": "64173899562356b106b95129"
+  },
+  "name": "Dominica",
+  "surname": "Manston",
+  "mail": "dmanston1@hostgator.com",
+  "password": "5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5",
+  "_class": "com.iso.bidding.model.User"
+},{
+  "_id": {
+    "$oid": "6419d93444d96377e2a99273"
+  },
+  "name": "John",
+  "surname": "Doe",
+  "mail": "johndoe@example.com",
+  "password": "94aefb8be78b2b7c344d11d1ba8a79ef087eceb19150881f69460b8772753263",
+  "_class": "com.iso.bidding.model.User"
+},{
+  "_id": {
+    "$oid": "641b217023af6d528d60ad12"
+  },
+  "name": "ihsan",
+  "surname": "ihsan",
+  "mail": "ihsan@ihsan.com",
+  "password": "01600a3acbb797151839113132553325177b0c1b307f29bd55822d18f578c5ab",
+  "_class": "com.iso.bidding.model.User"
+},{
+  "_id": {
+    "$oid": "641db24e913bad5408d11dc6"
+  },
+  "name": "deneme",
+  "surname": "deneme",
+  "mail": "deneme@deneme.com",
+  "password": "25b80b3556ca3a15353dd2fd312062fad27adcf5a1de51b75bdadea1fa8214ab",
+  "_class": "com.iso.bidding.model.User"
+}]

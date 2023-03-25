@@ -1,0 +1,54 @@
+[{
+  "_id": {
+    "$oid": "64187ba50e7ccd6d7acc6ce0"
+  },
+  "productId": {
+    "$oid": "6415d8caf3f35aecdfb88c35"
+  },
+  "startingPrice": 513,
+  "currentBid": 587,
+  "currentBidderId": {
+    "$oid": "641db24e913bad5408d11dc6"
+  },
+  "minimumRaise": 67,
+  "startTime": 1679515558,
+  "period": 4574577,
+  "inProgress": true,
+  "isFinished": false,
+  "_class": "com.iso.bidding.model.Auction"
+},{
+  "_id": {
+    "$oid": "64187ba50e7ccd6d7acc6ce1"
+  },
+  "productId": {
+    "$oid": "6415d8caf3f35aecdfb88c36"
+  },
+  "startingPrice": 430,
+  "currentBid": 654,
+  "currentBidderId": {
+    "$oid": "641b217023af6d528d60ad12"
+  },
+  "minimumRaise": 98,
+  "startTime": 1679515558,
+  "period": 1377760,
+  "inProgress": true,
+  "isFinished": false,
+  "_class": "com.iso.bidding.model.Auction"
+},{
+  "_id": {
+    "$oid": "641ae8c17cfd0799c9b446b6"
+  },
+  "startingPrice": 220,
+  "startTime": 1679515558,
+  "period": 1335236,
+  "inProgress": true,
+  "isFinished": false,
+  "currentBid": 220,
+  "minimumRaise": 10,
+  "productId": {
+    "$oid": "6415d8caf3f35aecdfb88c37"
+  },
+  "currentBidderId": {
+    "$oid": "64173899562356b106b95129"
+  }
+}]
