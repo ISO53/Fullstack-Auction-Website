@@ -17,16 +17,16 @@ import java.util.Optional;
 public class ProductController {
 
     @Autowired
-    private IProductRepository IProductRepository;
+    private IProductRepository iProductRepository;
 
     @GetMapping("/getAll")
     public ResponseEntity<List<Product>> getAllProducts() {
-        return ResponseEntity.ok().body(IProductRepository.findAll());
+        return ResponseEntity.ok().body(iProductRepository.findAll());
     }
 
     @GetMapping("/get/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable("id") String id) {
-        Optional<Product> productOptional = IProductRepository.findById(new ObjectId(id));
+        Optional<Product> productOptional = iProductRepository.findById(new ObjectId(id));
 
         return productOptional.isPresent() ?
                 new ResponseEntity<>(productOptional.get(), HttpStatus.FOUND) :
@@ -36,7 +36,7 @@ public class ProductController {
     @PostMapping("/create")
     public ResponseEntity<Product> createProduct(@RequestBody Product product) {
         try {
-            Product _product = IProductRepository.save(new Product(
+            Product _product = iProductRepository.save(new Product(
                     product.getName(),
                     product.getDescription(),
                     product.isPublished(),
@@ -50,7 +50,7 @@ public class ProductController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable("id") String id, @RequestBody Product product) {
-        Optional<Product> productOptional = IProductRepository.findById(new ObjectId(id));
+        Optional<Product> productOptional = iProductRepository.findById(new ObjectId(id));
 
         if (!productOptional.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -63,13 +63,13 @@ public class ProductController {
         _product.setPublished(product.isPublished());
         _product.setImageURL(product.getImageURL());
 
-        return new ResponseEntity<>(IProductRepository.save(_product), HttpStatus.OK);
+        return new ResponseEntity<>(iProductRepository.save(_product), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<HttpStatus> deleteProduct(@PathVariable("id") String id) {
         try {
-            IProductRepository.deleteById(new ObjectId(id));
+            iProductRepository.deleteById(new ObjectId(id));
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -79,7 +79,7 @@ public class ProductController {
     @DeleteMapping("/deleteAll")
     public ResponseEntity<HttpStatus> deleteAllProducts() {
         try {
-            IProductRepository.deleteAll();
+            iProductRepository.deleteAll();
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

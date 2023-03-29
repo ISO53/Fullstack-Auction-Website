@@ -18,16 +18,16 @@ import java.util.Optional;
 public class UserController {
 
     @Autowired
-    private IUserRepository IUserRepository;
+    private IUserRepository iUserRepository;
 
     @GetMapping("/getAll")
     public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok().body(IUserRepository.findAll());
+        return ResponseEntity.ok().body(iUserRepository.findAll());
     }
 
     @GetMapping("/get/{id}")
     public ResponseEntity<User> getUserById(@PathVariable("id") String id) {
-        Optional<User> userOptional = IUserRepository.findById(new ObjectId(id));
+        Optional<User> userOptional = iUserRepository.findById(new ObjectId(id));
 
         return userOptional.isPresent() ?
                 new ResponseEntity<>(userOptional.get(), HttpStatus.FOUND) :
@@ -48,7 +48,7 @@ public class UserController {
         }
 
         // There already is a user registered by this mail
-        if (IUserRepository.findByMail(user.getMail()) != null) {
+        if (iUserRepository.findByMail(user.getMail()) != null) {
             return new ResponseEntity<>(null, HttpStatus.CONFLICT);
         }
 
@@ -58,7 +58,7 @@ public class UserController {
         }
 
         try {
-            User _user = IUserRepository.save(new User(
+            User _user = iUserRepository.save(new User(
                     user.getName(),
                     user.getSurname(),
                     user.getMail(),
@@ -72,7 +72,7 @@ public class UserController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<User> updateUser(@PathVariable("id") String id, @RequestBody User user) {
-        Optional<User> userOptional = IUserRepository.findById(new ObjectId(id));
+        Optional<User> userOptional = iUserRepository.findById(new ObjectId(id));
 
         if (!userOptional.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -85,13 +85,13 @@ public class UserController {
         _user.setMail(user.getMail());
         _user.setPassword(user.getPassword());
 
-        return new ResponseEntity<>(IUserRepository.save(_user), HttpStatus.OK);
+        return new ResponseEntity<>(iUserRepository.save(_user), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<HttpStatus> deleteUser(@PathVariable("id") String id) {
         try {
-            IUserRepository.deleteById(new ObjectId(id));
+            iUserRepository.deleteById(new ObjectId(id));
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -101,7 +101,7 @@ public class UserController {
     @DeleteMapping("/deleteAll")
     public ResponseEntity<HttpStatus> deleteAllUsers() {
         try {
-            IUserRepository.deleteAll();
+            iUserRepository.deleteAll();
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -110,7 +110,7 @@ public class UserController {
 
     @GetMapping("/login")
     public ResponseEntity<User> login(@RequestParam String email, @RequestParam String password) {
-        User user = IUserRepository.findByMailAndPassword(email ,Encrypter.encryptPassword(password));
+        User user = iUserRepository.findByMailAndPassword(email ,Encrypter.encryptPassword(password));
 
         if (user == null) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);

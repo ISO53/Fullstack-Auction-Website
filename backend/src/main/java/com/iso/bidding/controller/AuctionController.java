@@ -1,9 +1,7 @@
 package com.iso.bidding.controller;
 
 import com.iso.bidding.model.Auction;
-import com.iso.bidding.model.User;
 import com.iso.bidding.repository.IAuctionRepository;
-import com.iso.bidding.repository.IUserRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
@@ -22,22 +20,19 @@ import java.util.Optional;
 public class AuctionController {
 
     @Autowired
-    private IAuctionRepository IAuctionRepository;
+    private IAuctionRepository iAuctionRepository;
 
-    @Autowired
-    private IUserRepository IUserRepository;
-
-    @Autowired
-    private SimpMessagingTemplate messagingTemplate;
+    //@Autowired
+    //private SimpMessagingTemplate messagingTemplate;
 
     @GetMapping("/getAll")
     public ResponseEntity<List<Auction>> getAllAuctions() {
-        return ResponseEntity.ok().body(IAuctionRepository.findAll());
+        return ResponseEntity.ok().body(iAuctionRepository.findAll());
     }
 
     @GetMapping("/get/{id}")
     public ResponseEntity<Auction> getAuctionById(@PathVariable("id") String id) {
-        Optional<Auction> auctionOptional = IAuctionRepository.findById(new ObjectId(id));
+        Optional<Auction> auctionOptional = iAuctionRepository.findById(new ObjectId(id));
 
         return auctionOptional.isPresent() ?
                 new ResponseEntity<>(auctionOptional.get(), HttpStatus.FOUND) :
@@ -48,7 +43,7 @@ public class AuctionController {
     public ResponseEntity<Auction> createAuction(@RequestBody Auction auction) {
         System.out.println(auction);
         try {
-            Auction _auction = IAuctionRepository.save(new Auction(
+            Auction _auction = iAuctionRepository.save(new Auction(
                     auction.getProductId(),
                     auction.getStartingPrice(),
                     auction.getMinimumRaise(),
@@ -61,7 +56,7 @@ public class AuctionController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<Auction> updateAuction(@PathVariable("id") String id, @RequestBody Auction auction) {
-        Optional<Auction> auctionOptional = IAuctionRepository.findById(new ObjectId(id));
+        Optional<Auction> auctionOptional = iAuctionRepository.findById(new ObjectId(id));
 
         if (!auctionOptional.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -75,17 +70,17 @@ public class AuctionController {
         _auction.setStartTime(auction.getStartTime());
         _auction.setPeriod(auction.getPeriod());
         _auction.setCurrentBid(auction.getCurrentBid());
-        _auction.setCurrentBidderId(auction.getCurrentBidderId());
+        _auction.setCurrentBidderName(auction.getCurrentBidderName());
         _auction.setInProgress(auction.isInProgress());
         _auction.setFinished(auction.isFinished());
 
-        return new ResponseEntity<>(IAuctionRepository.save(_auction), HttpStatus.OK);
+        return new ResponseEntity<>(iAuctionRepository.save(_auction), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<HttpStatus> deleteAuction(@PathVariable("id") String id) {
         try {
-            IAuctionRepository.deleteById(new ObjectId(id));
+            iAuctionRepository.deleteById(new ObjectId(id));
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -95,15 +90,16 @@ public class AuctionController {
     @DeleteMapping("/deleteAll")
     public ResponseEntity<HttpStatus> deleteAllAuctions() {
         try {
-            IAuctionRepository.deleteAll();
+            iAuctionRepository.deleteAll();
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @GetMapping("/bid/{auctionId}/{userId}/{offer}")
-    public ResponseEntity<String> bid(@PathVariable("auctionId") String auctionId, @PathVariable("userId") String userId, @PathVariable("offer") Double offer) {
+    /*
+    @GetMapping("/bid/{auctionId}/{userName}/{offer}")
+    public ResponseEntity<String> bid(@PathVariable("auctionId") String auctionId, @PathVariable("userName") String userName, @PathVariable("offer") Double offer) {
         ResponseEntity<Auction> response = getAuctionById(auctionId);
         Auction auction = response.getBody();
 
@@ -112,14 +108,7 @@ public class AuctionController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        Optional<User> userOptional = IUserRepository.findById(userId);
-
-        // User not found
-        if (!userOptional.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        boolean bidSuccess = auction.bid(userOptional.get(), offer);
+        boolean bidSuccess = auction.bid(userName, offer);
 
         if (!bidSuccess) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -134,7 +123,7 @@ public class AuctionController {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("aucId", auction.getId());
-            jsonObject.put("bidderId", auction.getCurrentBidderId());
+            jsonObject.put("bidderId", auction.getCurrentBidderName());
             jsonObject.put("currentBid", auction.getCurrentBid());
         } catch (JSONException e) {
             e.printStackTrace();
@@ -144,4 +133,5 @@ public class AuctionController {
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
+    */
 }

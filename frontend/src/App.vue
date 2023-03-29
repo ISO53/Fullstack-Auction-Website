@@ -93,13 +93,7 @@ function updateAuctionDiv(data) {
 	aucDiv.children[4].children[1].innerHTML = data.currentBid + "$";
 	aucDiv.children[6].children[0].value = data.currentBid + parseInt(aucDiv.children[4].children[2].textContent.slice(0, -1));
 	aucDiv.children[6].children[0].min = data.currentBid + parseInt(aucDiv.children[4].children[2].textContent.slice(0, -1));
-
-	fetch("http://localhost:8081/user/get/" + data.bidderId)
-		.then((response) => response.json())
-		.then((userData) => {
-			aucDiv.children[5].children[0].innerHTML = "Cuurent Bidder: " + userData.name + " " + userData.surname;
-		})
-		.catch((error) => console.error(error));
+	aucDiv.children[5].children[0].innerHTML = "Current Bidder: " + data.currentBidderName;
 }
 
 function manageBidButtons() {
@@ -144,17 +138,9 @@ function loadAuctionsDatas() {
 						// Make the minimum value for a user to bid to startingPrice + minimumRaise
 						auctionDiv.children[6].children[0].min = aucData[i].currentBid + aucData[i].minimumRaise;
 						auctionDiv.children[6].children[0].value = aucData[i].currentBid + aucData[i].minimumRaise;
-					})
-					.catch((error) => console.error(error));
 
-				fetch("http://localhost:8081/user/get/" + aucData[i].currentBidderId)
-					.then((response) => response.json())
-					.then((userData) => {
-						// Get the auction div
-						let auctionDiv = document.getElementById("auc_div_" + (i + 1));
-
-						// Make the minimum value for a user to bid to startingPrice + minimumRaise
-						auctionDiv.children[5].children[0].innerHTML = "Current Bidder: " + userData.name + " " + userData.surname;
+						console.log(aucData);
+						auctionDiv.children[5].children[0].innerHTML = "Current Bidder: " + aucData[i].currentBidderName;
 					})
 					.catch((error) => console.error(error));
 			}
@@ -277,7 +263,7 @@ export default {
 			document.cookie = `SESSION_HASH=${getSessionId()}; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC`;
 			document.getElementById("account_info").style.display = "none";
 			location.reload();
-		}
+		},
 	},
 };
 </script>

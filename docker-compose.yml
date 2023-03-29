@@ -1,0 +1,19 @@
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - "8080:80"
+    volumes:
+      - ./web:/app/web
+    environment:
+      - DEBUG=1
+  db:
+    image: mysql:latest
+    volumes:
+      - ./mysql:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=my-secret-pw
+      - MYSQL_DATABASE=my_db
+      - MYSQL_USER=my_user
+      - MYSQL_PASSWORD=my_user_pw

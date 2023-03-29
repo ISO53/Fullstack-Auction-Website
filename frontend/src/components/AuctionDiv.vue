@@ -16,7 +16,7 @@
 		<div class="auc_infos">
 			<h2 class="auc_info">##$</h2>
 			<h2 id="current_bid" class="auc_info">##$</h2>
-			<h2 class="auc_info">##$</h2>
+			<h2 id="min_bid" class="auc_info">##$</h2>
 		</div>
 		<div class="bidder">
 			<h2 class="auc_bidder">Current Bidder:</h2>
@@ -53,16 +53,20 @@ export default {
 	},
 	methods: {
 		bidRequest(event) {
-			console.log("DENEME");
-			let auctionId = event.target.id;
-			let userId = getCurrentUserId(); // Get from Redis
-			let offer = document.getElementById("offer_input").value;
-			console.log("http://localhost:8081/auction/bid/" + auctionId + "/" + userId + "/" + offer);
-
-			fetch("http://localhost:8081/auction/bid/" + auctionId + "/" + userId + "/" + offer)
+			fetch("http://localhost:8081/user/get/" + getCurrentUserId())
 				.then((response) => response.json())
 				.then((data) => {
-					console.log(data);
+					let auctionId = event.target.id;
+					let offer = parseInt(document.getElementById("offer_input").value) + parseInt(document.getElementById("min_bid"));
+					console.log("OFFR: ", offer);
+					let userName = data.name + " " + data.surname;
+
+					fetch("http://localhost:8081/auction/bid/" + auctionId + "/" + userName + "/" + offer)
+						.then((response) => response.json())
+						.then((data) => {
+							console.log(data);
+						})
+						.catch((error) => console.error(error));
 				})
 				.catch((error) => console.error(error));
 		},
