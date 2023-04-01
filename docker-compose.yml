@@ -1,16 +1,12 @@
-version: '3'
+version: '3.8'
 services:
-<<<<<<< HEAD
+
   mongo:
-    image: mongo:latest
+    image: mongo
     container_name: mongo
+    build: mongo_data
     ports:
       - 27017:27107
-
-  mongo-seed:
-    build: mongo_data
-    depends_on:
-      - mongo
 
   redis:
     image: redis
@@ -35,22 +31,3 @@ services:
       - "8080:8080"
     depends_on:
       - backend
-=======
-  web:
-    build: .
-    ports:
-      - "8080:80"
-    volumes:
-      - ./web:/app/web
-    environment:
-      - DEBUG=1
-  db:
-    image: mysql:latest
-    volumes:
-      - ./mysql:/var/lib/mysql
-    environment:
-      - MYSQL_ROOT_PASSWORD=my-secret-pw
-      - MYSQL_DATABASE=my_db
-      - MYSQL_USER=my_user
-      - MYSQL_PASSWORD=my_user_pw
->>>>>>> parent of 75b2ea1 (Docker configurations)

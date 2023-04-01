@@ -16,7 +16,7 @@ public class Auction{
     private ObjectId productId;
     private double startingPrice;
     private double currentBid;
-    private String currentBidderName;
+    private ObjectId currentBidderId;
     private double minimumRaise;
     private long startTime;     // Unix format of time
     private long period;        // Unix format of time
@@ -28,7 +28,7 @@ public class Auction{
         this.productId = productId;
         this.startingPrice = startingPrice;
         this.currentBid = 0;
-        this.currentBidderName = null;
+        this.currentBidderId = null;
         this.minimumRaise = minimumRaise;
         this.startTime = 0;
         this.period = period;
@@ -43,7 +43,7 @@ public class Auction{
                 ", productId=" + productId +
                 ", startingPrice=" + startingPrice +
                 ", currentBid=" + currentBid +
-                ", currentBidderName=" + currentBidderName +
+                ", currentBidderId=" + currentBidderId +
                 ", minimumRaise=" + minimumRaise +
                 ", startTime=" + startTime +
                 ", period=" + period +
@@ -52,9 +52,11 @@ public class Auction{
                 '}';
     }
 
-    public boolean bid(String name, double priceOffer) {
+    public boolean bid(User user, double priceOffer) {
         if (priceOffer < currentBid + minimumRaise) {
             System.out.println("Not enough raise!");
+            System.out.println("offer < currentBid + minimumRaise");
+            System.out.println(priceOffer + " < " + currentBid + " + " + minimumRaise);
             return false;
         }
 
@@ -64,7 +66,7 @@ public class Auction{
         }
 
         this.currentBid = priceOffer;
-        this.currentBidderName = name;
+        this.currentBidderId = user.getId();
         return true;
     }
 }
