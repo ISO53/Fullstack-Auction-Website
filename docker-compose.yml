@@ -1,19 +1,40 @@
-version: '3'
+version: '3.8'
 services:
-  web:
-    build: .
+  mongo:
+    build: mongo_data
+    container_name: mongo
     ports:
-      - "8080:80"
-    volumes:
-      - ./web:/app/web
+      - 27017:27107
+
+  redis:
+    image: redis
+    build: redis_data
+    hostname: redis
+    container_name: redis
+    # restart: always
+    ports:
+      - 6379:6379
     environment:
-      - DEBUG=1
-  db:
-    image: mysql:latest
-    volumes:
-      - ./mysql:/var/lib/mysql
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+
+  backend:
+    image: springboot
+    container_name: backend
+    build: backend
+    ports:
+      - 8081:8081
+    links:
+      - mongo
+      - redis
     environment:
-      - MYSQL_ROOT_PASSWORD=my-secret-pw
-      - MYSQL_DATABASE=my_db
-      - MYSQL_USER=my_user
-      - MYSQL_PASSWORD=my_user_pw
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+
+  frontend:
+    build: frontend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - backend
+    
