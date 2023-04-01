@@ -1,10 +1,15 @@
 version: '3.8'
 services:
   mongo:
-    build: mongo_data
+    image: mongo:latest
     container_name: mongo
     ports:
       - 27017:27107
+
+  mongo-seed:
+    build: mongo_data
+    depends_on:
+      - mongo
 
   redis:
     image: redis
@@ -37,4 +42,3 @@ services:
       - "8080:8080"
     depends_on:
       - backend
-    

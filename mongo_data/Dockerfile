@@ -1,5 +1,10 @@
-FROM mongo:latest
+FROM mongo
 
-ENV MONGO_INITDB_DATABASE biddingDB
+COPY Auction.json /Auction.json 
+COPY Product.json /Product.json
+COPY User.json /User.json
+COPY init.sh /init.sh
 
-CMD ["mongod"]
+RUN chmod +x init.sh
+
+CMD ./init.sh
