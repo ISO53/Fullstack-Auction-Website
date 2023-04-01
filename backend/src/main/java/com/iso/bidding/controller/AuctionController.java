@@ -1,11 +1,10 @@
 package com.iso.bidding.controller;
 
 import com.iso.bidding.model.Auction;
-import com.iso.bidding.model.User;
 import com.iso.bidding.repository.IAuctionRepository;
-import com.iso.bidding.repository.IUserRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,11 +22,8 @@ public class AuctionController {
     @Autowired
     private IAuctionRepository iAuctionRepository;
 
-    @Autowired
-    private IUserRepository iUserRepository;
-
-    @Autowired
-    private SimpMessagingTemplate messagingTemplate;
+    //@Autowired
+    //private SimpMessagingTemplate messagingTemplate;
 
     @GetMapping("/getAll")
     public ResponseEntity<List<Auction>> getAllAuctions() {
@@ -74,7 +70,7 @@ public class AuctionController {
         _auction.setStartTime(auction.getStartTime());
         _auction.setPeriod(auction.getPeriod());
         _auction.setCurrentBid(auction.getCurrentBid());
-        _auction.setCurrentBidderId(auction.getCurrentBidderId());
+        _auction.setCurrentBidderName(auction.getCurrentBidderName());
         _auction.setInProgress(auction.isInProgress());
         _auction.setFinished(auction.isFinished());
 
@@ -101,8 +97,9 @@ public class AuctionController {
         }
     }
 
-    @GetMapping("/bid/{auctionId}/{userId}/{offer}")
-    public ResponseEntity<HttpStatus> bid(@PathVariable("auctionId") String auctionId, @PathVariable("userId") String userId, @PathVariable("offer") Double offer) {
+    /*
+    @GetMapping("/bid/{auctionId}/{userName}/{offer}")
+    public ResponseEntity<String> bid(@PathVariable("auctionId") String auctionId, @PathVariable("userName") String userName, @PathVariable("offer") Double offer) {
         ResponseEntity<Auction> response = getAuctionById(auctionId);
         Auction auction = response.getBody();
 
@@ -111,14 +108,7 @@ public class AuctionController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        Optional<User> optionalUser = iUserRepository.findById(userId);
-
-
-        if (!optionalUser.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        boolean bidSuccess = auction.bid(optionalUser.get(), offer);
+        boolean bidSuccess = auction.bid(userName, offer);
 
         if (!bidSuccess) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -130,8 +120,18 @@ public class AuctionController {
         }
 
         // Bid success mean data changed in the auctions. Frontend must be signaled
-        messagingTemplate.convertAndSend("/bid/update", responseEntity.getBody());
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("aucId", auction.getId());
+            jsonObject.put("bidderId", auction.getCurrentBidderName());
+            jsonObject.put("currentBid", auction.getCurrentBid());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        messagingTemplate.convertAndSend("/bid/update", jsonObject.toString());
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
+    */
 }

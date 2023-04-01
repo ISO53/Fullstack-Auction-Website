@@ -1,10 +1,8 @@
 FROM mongo
 
-COPY Auction.json /Auction.json 
-COPY Product.json /Product.json
-COPY User.json /User.json
-COPY init.sh /init.sh
+# RUN mongoimport --db biddingDB --collection User --type json --file /data/collections/User.json
+# RUN mongoimport --db biddingDB --collection Product --type json --file /data/collections/Product.json
+# RUN mongoimport --db biddingDB --collection Auction --type json --file /data/collections/Auction.json
 
-RUN chmod +x init.sh
+CMD [ "mongod" ]
 
-CMD ./init.sh

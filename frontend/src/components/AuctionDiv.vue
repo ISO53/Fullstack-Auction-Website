@@ -53,13 +53,21 @@ export default {
 	},
 	methods: {
 		bidRequest(event) {
-			let auctionId = event.target.id;
-			let offer = event.target.parentNode.children[0].value;
-			let userId = getCurrentUserId();
+			fetch("http://localhost:8081/user/get/" + getCurrentUserId())
+				.then((response) => response.json())
+				.then((data) => {
+					let auctionId = event.target.id;
+					let offer = parseInt(document.getElementById("offer_input").value) + parseInt(document.getElementById("min_bid"));
+					console.log("OFFR: ", offer);
+					let userName = data.name + " " + data.surname;
 
-			fetch("http://localhost:8081/auction/bid/" + auctionId + "/" + userId + "/" + offer)
-				.then((response) => console.log(response))
-				.then((data) => console.log(data))
+					fetch("http://localhost:8081/auction/bid/" + auctionId + "/" + userName + "/" + offer)
+						.then((response) => response.json())
+						.then((data) => {
+							console.log(data);
+						})
+						.catch((error) => console.error(error));
+				})
 				.catch((error) => console.error(error));
 		},
 	},

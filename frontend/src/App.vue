@@ -81,26 +81,19 @@ function listenWebSocketForBackendUpdates() {
 		console.log("Connected to websocket.");
 
 		stompClient.subscribe("/bid/update", function (message) {
-			console.log("Received message:");
-			console.log(JSON.parse(message.body));
+			console.log("Received message: " + message.body);
 			updateAuctionDiv(JSON.parse(message.body));
 		});
 	};
 }
 
 function updateAuctionDiv(data) {
-	let aucDiv = document.getElementById(data.id).parentElement.parentElement;
+	let aucDiv = document.getElementById(data.aucId).parentElement.parentElement;
 
 	aucDiv.children[4].children[1].innerHTML = data.currentBid + "$";
 	aucDiv.children[6].children[0].value = data.currentBid + parseInt(aucDiv.children[4].children[2].textContent.slice(0, -1));
 	aucDiv.children[6].children[0].min = data.currentBid + parseInt(aucDiv.children[4].children[2].textContent.slice(0, -1));
-
-	fetch("http://localhost:8081/user/get/" + data.currentBidderId)
-		.then((response) => response.json())
-		.then((userData) => {
-			aucDiv.children[5].children[0].innerHTML = "Current Bidder: " + userData.name + " " + userData.surname;
-		})
-		.catch((error) => console.error(error));
+	aucDiv.children[5].children[0].innerHTML = "Current Bidder: " + data.currentBidderName;
 }
 
 function manageBidButtons() {
@@ -146,12 +139,8 @@ function loadAuctionsDatas() {
 						auctionDiv.children[6].children[0].min = aucData[i].currentBid + aucData[i].minimumRaise;
 						auctionDiv.children[6].children[0].value = aucData[i].currentBid + aucData[i].minimumRaise;
 
-						fetch("http://localhost:8081/user/get/" + aucData[i].currentBidderId)
-							.then((response) => response.json())
-							.then((userData) => {
-								auctionDiv.children[5].children[0].innerHTML = "Current Bidder: " + userData.name + " " + userData.surname;
-							})
-							.catch((error) => console.error(error));
+						console.log(aucData);
+						auctionDiv.children[5].children[0].innerHTML = "Current Bidder: " + aucData[i].currentBidderName;
 					})
 					.catch((error) => console.error(error));
 			}
