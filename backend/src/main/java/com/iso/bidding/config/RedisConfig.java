@@ -11,6 +11,8 @@ public class RedisConfig {
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
+        // Change this to "localhost" if running from local
+        // Change this to "redis" if running from docker container
         return new LettuceConnectionFactory("redis", 6379);
     }
 

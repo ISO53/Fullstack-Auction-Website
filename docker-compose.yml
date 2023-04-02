@@ -2,11 +2,16 @@ version: '3.8'
 services:
 
   mongo:
-    image: mongo
+    image: mongo:latest
     container_name: mongo
-    build: mongo_data
     ports:
       - 27017:27107
+
+  mongo_data_load:
+    container_name: mongo_data_load
+    build: mongo_data_load
+    depends_on:
+      - mongo
 
   redis:
     image: redis
@@ -22,6 +27,9 @@ services:
     ports:
       - 8081:8081
     links:
+      - mongo
+      - redis
+    depends_on:
       - mongo
       - redis
 
