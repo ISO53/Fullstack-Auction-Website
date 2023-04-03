@@ -15,6 +15,13 @@
 
 and that's it. If you don't want to reset the data every time you run the project, next time remove the ```--build``` part.
 
+## How to use?
+* If you want to reach the website use ```localhost:8080``` on your preffered browser.
+* You can reach backend methods on ```localhost:8081``` on your preffered browser or an application like PostMan. E.g.:
+  * *localhost:8081/user/getAll*
+  * *localhost:8081/product/getAll*
+* Mongo database should be run on port ```27017```.
+* Redis database should be run on port ```6379```.
 ## Additional informations
 ### Technologies
 This project is built using a robust and cutting-edge technology stack, which includes:
