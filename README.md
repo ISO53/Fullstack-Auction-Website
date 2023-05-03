@@ -30,6 +30,3 @@ This project is built using a robust and cutting-edge technology stack, which in
 * MongoDB: a flexible and scalable NoSQL database, providing a seamless and efficient way to store and manage our data.
 * Vue.js: a progressive JavaScript framework for building user interfaces, allowing us to create dynamic and responsive front-end components.
 * Docker: a powerful containerization technology, simplifying our deployment process and ensuring consistency across our development, testing, and production environments.
-
-### Registration Key
-key: ```6b8a1e77637bffbb984143aa6b630b869f6ad73daee00ba0c7670a4bcb32740e```
