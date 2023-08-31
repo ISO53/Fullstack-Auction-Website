@@ -1,0 +1,15 @@
+com\iso\bidding\model\Product.class
+com\iso\bidding\BiddingApplication.class
+com\iso\bidding\config\RedisConfig.class
+com\iso\bidding\utils\WebSocket.class
+com\iso\bidding\model\Auction.class
+com\iso\bidding\repository\IAuctionRepository.class
+com\iso\bidding\controller\ProductController.class
+com\iso\bidding\controller\SpringSessionController.class
+com\iso\bidding\repository\IUserRepository.class
+com\iso\bidding\model\User.class
+com\iso\bidding\controller\UserController.class
+com\iso\bidding\repository\IProductRepository.class
+com\iso\bidding\utils\DateConverter.class
+com\iso\bidding\controller\AuctionController.class
+com\iso\bidding\utils\Encrypter.class

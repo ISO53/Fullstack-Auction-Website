@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.iso.bidding.BiddingApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.351 s - in com.iso.bidding.BiddingApplicationTests
