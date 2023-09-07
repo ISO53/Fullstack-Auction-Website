@@ -30,3 +30,11 @@ This project is built using a robust and cutting-edge technology stack, which in
 * MongoDB: a flexible and scalable NoSQL database, providing a seamless and efficient way to store and manage our data.
 * Vue.js: a progressive JavaScript framework for building user interfaces, allowing us to create dynamic and responsive front-end components.
 * Docker: a powerful containerization technology, simplifying our deployment process and ensuring consistency across our development, testing, and production environments.
+
+### License
+ This project is licensed under the [GNU General Public License v3.0](LICENSE).
+
+<br>
+
+[![Follow me on GitHub](https://img.shields.io/github/followers/iso53?label=Follow%20%40iso53&style=social)](https://github.com/iso53)
+
