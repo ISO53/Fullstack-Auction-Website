@@ -18,7 +18,7 @@
     "vue": "^3.2.13"
   },
   "devDependencies": {
-    "@aws-sdk/credential-providers": "^3.351.0",
+    "@aws-sdk/credential-providers": "^3.441.0",
     "@babel/core": "^7.12.16",
     "@babel/eslint-parser": "^7.12.16",
     "@types/sockjs-client": "^1.5.1",
