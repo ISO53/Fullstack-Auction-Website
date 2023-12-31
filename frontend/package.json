@@ -10,6 +10,7 @@
   "dependencies": {
     "@stomp/stompjs": "^7.0.0",
     "core-js": "^3.8.3",
+    "npm": "^10.2.5",
     "sockjs-client": "^1.6.1",
     "stomp-websocket": "^2.3.4-next",
     "tls": "^0.0.1",
@@ -25,7 +26,7 @@
     "@types/stompjs": "^2.3.5",
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-eslint": "~5.0.0",
-    "@vue/cli-service": "~5.0.0",
+    "@vue/cli-service": "^5.0.8",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
     "mongodb-client-encryption": "^2.3.0",
