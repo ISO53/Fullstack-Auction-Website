@@ -10,7 +10,7 @@
 
 ## How to run?
 * Go to the folder you want to download the repository
-* type ```git clone https://github.com/ISO53/Fullstack-Auction-Website```
+* type ```git clone https://github.com/ISO53/Fullstack-Auction-Website.git```
 * type ```docker compose up --build```
 
 and that's it. If you don't want to reset the data every time you run the project, next time remove the ```--build``` part.
